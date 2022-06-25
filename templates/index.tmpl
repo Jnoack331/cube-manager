@@ -1,0 +1,122 @@
+<html>
+<head>
+	<link rel="icon" href="/public/assets/img/creeper.ico">
+	<title>
+		CubeManager
+	</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+	<script src="/public/assets/js/upload.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+	<style>
+		form {
+			margin: 0;
+		}
+	</style>
+</head>
+<body class="text-center">
+	<nav class="navbar navbar-expand-lg bg-light">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="/">
+				<img src="/public/assets/img/creeper.png" alt="" width="57" height="57">
+			</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+						<form class="d-flex" action="/restart" method="post" data-set-current-path>
+							<button class="btn btn-outline-primary mx-auto" type="submit">
+								<i class="bi bi-arrow-clockwise"></i>
+								Restart
+							</button>
+						</form>
+					</li>
+				</ul>
+				<form class="d-flex" action="/logout" method="post">
+					<button class="btn btn-outline-secondary mx-auto" type="submit">
+						<i class="bi bi-box-arrow-right"></i>
+						Logout
+					</button>
+				</form>
+			</div>
+		</div>
+	</nav>
+	<main class="form-signin w-100 m-auto">
+		<div class="container-md">
+			<form id="upload" enctype="multipart/form-data" method="post" action="/upload" style="display: none" data-set-current-path>
+				<input type="file" name="file" id="file" />
+			</form>
+
+			<ul class="list-group" style="border-bottom-left-radius: unset;border-bottom-right-radius: unset;margin-top: 2rem;">
+				<li class="list-group-item" style="text-align: left;">
+					{{ .currenPath }}
+				</li>
+			</ul>
+			<ul class="list-group" id="file-list" style="margin-top: -1px;border-top-left-radius: unset;border-top-right-radius: unset;">
+				{{range $val := .filelist}}
+					{{if eq $val.Back true}}
+						<a href="/?path={{ $val.Path }}" class="list-group-item list-group-item-action d-flex justify-content-between" data-path="{{ $val.Path }}" data-is-dir="{{ $val.Info.IsDir }}">
+							<span>
+								<i class="bi bi-folder"></i>
+								.. /
+							</span>
+						</a>
+					{{else}}
+						{{if $val.Info.IsDir}}
+							<a href="/?path={{ $val.Path }}" class="list-group-item list-group-item-action d-flex justify-content-between {{if eq $val.Info.IsDir false}}disabled{{end}}" data-path="{{ $val.Path }}" data-is-dir="{{ $val.Info.IsDir }}">
+								<span>
+									{{if $val.Info.IsDir}}
+										<i class="bi bi-folder"></i>
+									{{else}}
+										<i class="bi bi-file-earmark"></i>
+									{{end}}
+									{{$val.Info.Name}}
+									{{if $val.Info.IsDir}}
+										/
+									{{end}}
+								</span>
+								<form method="post" action="/delete?path={{ $val.Path }}" data-set-current-path>
+									<button class="btn btn-outline-secondary" type="submit">
+										<i class="bi bi-trash3"></i>
+									</button>
+								</form>
+							</a>
+						{{else}}
+							<li class="list-group-item d-flex justify-content-between" data-path="{{ $val.Path }}" data-is-dir="{{ $val.Info.IsDir }}">
+								<span>
+									{{if $val.Info.IsDir}}
+										<i class="bi bi-folder"></i>
+									{{else}}
+										<i class="bi bi-file-earmark"></i>
+									{{end}}
+									{{$val.Info.Name}}
+									{{if $val.Info.IsDir}}
+										/
+									{{end}}
+								</span>
+								<div class="d-flex justify-content-between">
+									<form method="post" action="/download?path={{ $val.Path }}" data-set-current-path style="margin-right: 0.5rem">
+
+										<button class="btn btn-outline-secondary" type="submit">
+											<i class="bi bi-cloud-download"></i>
+										</button>
+									</form>
+									<form method="post" action="/delete?path={{ $val.Path }}" data-set-current-path>
+
+										<button class="btn btn-outline-secondary" type="submit">
+											<i class="bi bi-trash3"></i>
+										</button>
+									</form>
+								</div>
+							</li>
+						{{end}}
+
+					{{end}}
+				{{end}}
+			</ul>
+		</div>
+	</main>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+</body>
+</html>
