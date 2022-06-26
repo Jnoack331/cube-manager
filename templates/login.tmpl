@@ -1,70 +1,55 @@
 <html>
 <head>
-	<link rel="icon" href="/public/assets/img/creeper.ico">
-	<title>
-		CubeManager
-	</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-	<style>
-		html,
-		body {
-			height: 100%;
-		}
+    <link rel="icon" href="/public/assets/img/creeper.ico">
+    <title>
+        CubeManager
+    </title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
 
-		body {
-			display: flex;
-			align-items: center;
-			padding-top: 40px;
-			padding-bottom: 40px;
-			background-color: #f5f5f5;
-		}
+        body {
+            background-color: #f5f5f5;
+        }
 
-		.form-signin {
-			max-width: 330px;
-			padding: 15px;
-		}
+        .form-signin {
+            max-width: 330px;
+            padding: 15px;
+        }
 
-		.form-signin .form-floating:focus-within {
-			z-index: 2;
-		}
+        .form-signin .form-floating:focus-within {
+            z-index: 2;
+        }
 
-		.form-signin input[type="text"] {
-			margin-bottom: -1px;
-			border-bottom-right-radius: 0;
-			border-bottom-left-radius: 0;
-		}
+        .form-signin input[type="text"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
 
-		.form-signin input[type="password"] {
-			margin-bottom: 10px;
-			border-top-left-radius: 0;
-			border-top-right-radius: 0;
-		}
-	</style>
+        .form-signin input[type="password"] {
+            margin-bottom: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        #app {
+            width: 100%;
+        }
+    </style>
 </head>
 <body class="text-center">
-		<main class="form-signin w-100 m-auto">
-			<form method="post">
-				<img class="mb-4" src="/public/assets/img/creeper.png" alt="" width="57" height="57">
-				<h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-
-				{{if .error}}
-					<div class="alert alert-danger" role="alert">
-						{{ .error }}
-					</div>
-				{{end}}
-
-				<div class="form-floating">
-					<input type="text" name="user" class="form-control" id="floatingInput" placeholder="Username">
-					<label for="floatingInput">Username</label>
-				</div>
-				<div class="form-floating">
-					<input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password">
-					<label for="floatingPassword">Password</label>
-				</div>
-				<button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-			</form>
-		</main>
-
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <div id="app">
+        <login v-if="authenticated === false" class="form-signin w-100 m-auto"></login>
+        <dashboard-header v-if="authenticated"></dashboard-header>
+        <dashboard v-if="authenticated"></dashboard>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="module" src="/public/assets/js/main.js"></script>
 </body>
 </html>

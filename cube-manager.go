@@ -35,11 +35,13 @@ func main() {
 
 	r.GET("/", controllers.Dashboard)
 	r.POST("/", controllers.Dashboard)
+	r.GET("/filelist", controllers.Filelist)
 	r.POST("/upload", controllers.Upload)
 	r.POST("/delete", controllers.Delete)
 	r.POST("/download", controllers.Download)
 	r.POST("/logout", controllers.Logout)
 	r.POST("/restart", controllers.Restart)
+	r.GET("/authenticated", controllers.Authenticated)
 
 	r.GET("/login", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "login.tmpl", gin.H{})

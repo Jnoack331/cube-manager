@@ -13,9 +13,9 @@ type Filesystem struct {
 }
 
 type File struct {
-	Info os.DirEntry
-	Path string
-	Back bool
+	IsDir bool
+	Name  string
+	Path  string
 }
 
 func (e Filesystem) GetFileList(root string) []File {
@@ -33,29 +33,16 @@ func (e Filesystem) GetFileList(root string) []File {
 		}
 
 		if first {
-			splitted := strings.Split(path, "/")
-			splitted = splitted[:len(splitted)-1]
-			newPath := strings.Join(splitted, "/")
-			fileList = append(fileList, File{d, newPath, true})
 			first = false
-		} else {
-			fileList = append(fileList, File{d, path, false})
+			return nil
 		}
 
+		fileList = append(fileList, File{d.IsDir(), d.Name(), path})
 		return nil
 	})
 
-	first = true
 	sort.Slice(fileList, func(i, j int) bool {
-		if fileList[j].Back {
-			return false
-		}
-
-		if fileList[i].Back {
-			return true
-		}
-
-		return fileList[i].Info.IsDir()
+		return fileList[i].IsDir
 	})
 
 	return fileList

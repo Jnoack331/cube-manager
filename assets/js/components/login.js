@@ -1,29 +1,42 @@
 import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.esm.browser.js';
 
-export const LoginComponent = Vue.component('login', {
+export const Login = Vue.component('login', {
+    data: function () {
+        return {
+            username: '',
+            password: '',
+        };
+    },
+    methods: {
+      onSubmit: function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+
+          axios.post('/login', {
+              username: this.username,
+              password: this.password,
+          }).then(response => {
+              this.$root.authenticated = response.data.authenticated;
+          }).catch(_ => {});
+      }
+    },
     template: `
-        <main class="form-signin w-100 m-auto">
-          <form>
-            <img class="mb-4" src="/docs/5.2/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+        <form method="post" v-on:submit="onSubmit($event)">
+            <img class="mb-4" src="/public/assets/img/creeper.png" alt="" width="57" height="57">
             <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-        
+
+            <div class="alert alert-danger" role="alert">
+            </div>
+
             <div class="form-floating">
-              <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-              <label for="floatingInput">Email address</label>
+                <input type="text" name="user" class="form-control" id="floatingInput" placeholder="Username" v-model="username">
+                <label for="floatingInput">Username</label>
             </div>
             <div class="form-floating">
-              <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-              <label for="floatingPassword">Password</label>
-            </div>
-        
-            <div class="checkbox mb-3">
-              <label>
-                <input type="checkbox" value="remember-me"> Remember me
-              </label>
+                <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" v-model="password">
+                <label for="floatingPassword">Password</label>
             </div>
             <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-            <p class="mt-5 mb-3 text-muted">&copy; 2017–2022</p>
-          </form>
-        </main>
+        </form>
     `
 })

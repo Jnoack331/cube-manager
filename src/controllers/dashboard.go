@@ -1,8 +1,7 @@
 package controllers
 
 import (
-	Filesystem "cube-manager/src/filesystem"
-	MinecraftManager "cube-manager/src/minecraft-manager"
+	"cube-manager/src/filesystem"
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -16,12 +15,18 @@ import (
 )
 
 func Dashboard(c *gin.Context) {
+	c.HTML(http.StatusOK, "login.tmpl", gin.H{})
+}
+
+func Filelist(c *gin.Context) {
 	session := sessions.Default(c)
-	minecraft := MinecraftManager.MinecraftManager{}
 	if session.Get("authenticated") != true {
-		c.Redirect(302, "/login")
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"filelist": []string{},
+		})
 	}
 
+	myfilesystem := filesystem.Filesystem{}
 	currentDirectory, _ := os.Getwd()
 	value := c.Query("path")
 	currentDirectoryLength := len(strings.Split(currentDirectory, "/"))
@@ -30,11 +35,9 @@ func Dashboard(c *gin.Context) {
 		currentDirectory = value
 	}
 
-	filesystem := Filesystem.Filesystem{}
-	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-		"running":    minecraft.IsServerRunning(),
-		"filelist":   filesystem.GetFileList(currentDirectory),
-		"currenPath": value,
+	c.JSON(http.StatusOK, gin.H{
+		"filelist":    myfilesystem.GetFileList(currentDirectory),
+		"currentPath": currentDirectory,
 	})
 }
 
@@ -61,8 +64,8 @@ func Upload(c *gin.Context) {
 		return
 	}
 
-	currentPath := c.Query("currentPath")
-	destinationFile := currentPath + "/" + filename
+	targetPath := c.Query("path")
+	destinationFile := targetPath + "/" + filename
 	err = ioutil.WriteFile(destinationFile, input, 0644)
 	if err != nil {
 		fmt.Println("Error creating", destinationFile)
@@ -70,8 +73,7 @@ func Upload(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, "/?path="+currentPath)
-
+	c.JSON(http.StatusOK, gin.H{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -83,10 +85,10 @@ func Delete(c *gin.Context) {
 		c.Redirect(302, "/login")
 	}
 
-	currentPath := c.Query("currentPath")
-	path := c.Query("path")
+	c.Request.ParseForm()
+	path := c.Request.Form.Get("path")
 	os.RemoveAll(path)
-	c.Redirect(302, "/?path="+currentPath)
+	c.JSON(http.StatusOK, gin.H{})
 }
 
 func Download(c *gin.Context) {

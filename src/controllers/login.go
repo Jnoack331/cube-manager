@@ -8,22 +8,22 @@ import (
 )
 
 type LoginForm struct {
-	User     string `form:"user" binding:"required"`
-	Password string `form:"password" binding:"required"`
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 func Login(c *gin.Context) {
 	var form LoginForm
 	if err := c.ShouldBind(&form); err != nil {
-		c.HTML(http.StatusOK, "login.tmpl", gin.H{
-			"error": "Wrong Credentials!",
+		c.JSON(http.StatusOK, gin.H{
+			"authenticated": false,
 		})
 		return
 	}
 
-	if form.User != os.Getenv("USERNAME") || form.Password != os.Getenv("PASSWORD") {
-		c.HTML(http.StatusOK, "login.tmpl", gin.H{
-			"error": "Wrong Credentials!",
+	if form.Username != os.Getenv("USERNAME") || form.Password != os.Getenv("PASSWORD") {
+		c.JSON(http.StatusOK, gin.H{
+			"authenticated": false,
 		})
 		return
 	}
@@ -31,7 +31,21 @@ func Login(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Set("authenticated", true)
 	session.Save()
-	c.Redirect(302, "/")
+	c.JSON(http.StatusOK, gin.H{
+		"authenticated": true,
+	})
+}
+
+func Authenticated(c *gin.Context) {
+	session := sessions.Default(c)
+	authenticated := false
+	if session.Get("authenticated") == true {
+		authenticated = true
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"authenticated": authenticated,
+	})
 }
 
 func Logout(c *gin.Context) {
