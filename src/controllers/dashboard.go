@@ -15,7 +15,7 @@ import (
 )
 
 func Dashboard(c *gin.Context) {
-	c.HTML(http.StatusOK, "login.tmpl", gin.H{})
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{})
 }
 
 func Filelist(c *gin.Context) {
@@ -79,15 +79,24 @@ func Upload(c *gin.Context) {
 	}
 }
 
+type DeleteForm struct {
+	Path string `json:"path" binding:"required"`
+}
+
 func Delete(c *gin.Context) {
 	session := sessions.Default(c)
 	if session.Get("authenticated") != true {
 		c.Redirect(302, "/login")
 	}
 
-	c.Request.ParseForm()
-	path := c.Request.Form.Get("path")
-	os.RemoveAll(path)
+	var form DeleteForm
+	if err := c.ShouldBind(&form); err != nil {
+		c.JSON(http.StatusMethodNotAllowed, gin.H{})
+	}
+
+	path := form.Path
+	myFilesystem := filesystem.Filesystem{}
+	myFilesystem.Delete(path)
 	c.JSON(http.StatusOK, gin.H{})
 }
 
@@ -97,7 +106,6 @@ func Download(c *gin.Context) {
 		c.Redirect(302, "/login")
 	}
 
-	currentPath := c.Query("currentPath")
 	path := c.Query("path")
 	splitted := strings.Split(path, "/")
 	fileName := splitted[len(splitted)-1]
@@ -105,7 +113,6 @@ func Download(c *gin.Context) {
 	c.Header("Content-Type", "application/octet-stream")
 	c.Header("Content-Disposition", "attachment; filename="+fileName)
 	c.File(path)
-	c.Redirect(302, "/?path="+currentPath)
 }
 
 func Restart(c *gin.Context) {
@@ -116,6 +123,5 @@ func Restart(c *gin.Context) {
 
 	cmd := exec.Command("sudo", "systemctl", "restart", "minecraft")
 	cmd.Run()
-	currentPath := c.Query("currentPath")
-	c.Redirect(302, "/?path="+currentPath)
+	c.JSON(http.StatusOK, gin.H{})
 }

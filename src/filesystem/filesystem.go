@@ -47,3 +47,13 @@ func (e Filesystem) GetFileList(root string) []File {
 
 	return fileList
 }
+
+func (e Filesystem) Delete(path string) {
+	currentWorkingDirectory, _ := os.Getwd()
+	minDepth := strings.Count(currentWorkingDirectory, "/")
+	pathDepth := strings.Count(path, "/")
+
+	if pathDepth > minDepth {
+		os.RemoveAll(path)
+	}
+}

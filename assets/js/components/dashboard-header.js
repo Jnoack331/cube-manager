@@ -1,7 +1,15 @@
 import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.esm.browser.js';
 
 export const DashboardHeader = Vue.component('dashboard-header', {
-    mounted: function () {
+    methods: {
+        onLogout: function () {
+            axios.post('/logout').then(response => {
+                window.location = '/login';
+            }).catch(_ => {});
+        },
+        onRestart: function () {
+            axios.post('/restart').catch(_ => {});
+        }
     },
     template: `
         <nav class="navbar navbar-expand-lg bg-light">
@@ -15,20 +23,16 @@ export const DashboardHeader = Vue.component('dashboard-header', {
               <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                   <li class="nav-item">
-                    <form class="d-flex" action="/restart" method="post" data-set-current-path>
-                      <button class="btn btn-outline-primary mx-auto" type="submit">
+                      <button class="btn btn-outline-primary mx-auto" v-on:click="onRestart()">
                         <i class="bi bi-arrow-clockwise"></i>
                         Restart
                       </button>
-                    </form>
                   </li>
                 </ul>
-                <form class="d-flex" action="/logout" method="post">
-                  <button class="btn btn-outline-secondary mx-auto" type="submit">
+                  <button class="btn btn-outline-secondary" v-on:click="onLogout()">
                     <i class="bi bi-box-arrow-right"></i>
                     Logout
                   </button>
-                </form>
               </div>
             </div>
         </nav>

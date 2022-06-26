@@ -56,5 +56,5 @@ func Logout(c *gin.Context) {
 
 	session.Delete("authenticated")
 	session.Save()
-	c.Redirect(302, "/login")
+	c.JSON(http.StatusOK, gin.H{})
 }
