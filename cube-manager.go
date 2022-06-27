@@ -34,7 +34,6 @@ func main() {
 	r.Use(sessions.Sessions("sessions", store))
 
 	r.GET("/", controllers.Dashboard)
-	r.POST("/", controllers.Dashboard)
 	r.GET("/filelist", controllers.Filelist)
 	r.POST("/upload", controllers.Upload)
 	r.POST("/delete", controllers.Delete)
@@ -44,7 +43,7 @@ func main() {
 	r.GET("/authenticated", controllers.Authenticated)
 
 	r.GET("/login", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl", gin.H{})
+		c.Redirect(http.StatusFound, "/")
 	})
 	r.POST("/login", controllers.Login)
 	r.Run()

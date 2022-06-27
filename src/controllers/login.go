@@ -21,7 +21,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if form.Username != os.Getenv("USERNAME") || form.Password != os.Getenv("PASSWORD") {
+	if form.Username != os.Getenv("CUBE_USERNAME") || form.Password != os.Getenv("CUBE_PASSWORD") {
 		c.JSON(http.StatusOK, gin.H{
 			"authenticated": false,
 		})
