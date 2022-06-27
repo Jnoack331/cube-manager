@@ -1,4 +1,5 @@
 import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.esm.browser.js';
+import { status } from "./upload-status.js";
 
 export const Dashboard = Vue.component('dashboard', {
     data: function () {
@@ -28,7 +29,9 @@ export const Dashboard = Vue.component('dashboard', {
       },
       onDrop: function(event) {
           event.preventDefault();
+          this.$root.$emit("upload", true);
 
+          console.log(event.dataTransfer.files[0]);
           let formData = new FormData();
           formData.append("file", event.dataTransfer.files[0]);
           axios.post('/upload', formData, {
@@ -40,10 +43,19 @@ export const Dashboard = Vue.component('dashboard', {
               },
               onUploadProgress: (event) => {
                   const percentage = Math.round((100 * event.loaded) / event.total);
-                  console.log(percentage);
+                  if (percentage === 100) {
+                      this.$root.$emit("upload-status", status('moving', percentage));
+                  } else {
+                      this.$root.$emit("upload-status", status('uploading', percentage));
+                  }
               },
           }).then(_ => {
               this.changeDirectory();
+              this.$root.$emit("upload-status", status('finished'));
+              setTimeout( _ => this.$root.$emit("upload", false), 3000);
+          }).catch(_ => {
+              this.$root.$emit("upload-status", status('error'));
+              setTimeout(_ => this.$root.$emit("upload", false), 3000);
           });
       }
     },

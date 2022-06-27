@@ -1,4 +1,5 @@
 import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.esm.browser.js';
+import {notification} from "./notification.js";
 
 export const FileEntry = Vue.component('file-entry', {
     props: ['file'],
@@ -21,6 +22,7 @@ export const FileEntry = Vue.component('file-entry', {
           axios.post('/delete', {
               path: this.file.Path
           }).then(_ => {
+              this.$root.$emit('notification', notification('Deleted ' + this.file.Name, 'success'));
               this.$emit('change-directory');
           });
       }
