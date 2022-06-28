@@ -3,8 +3,8 @@ A simple minecraft server managment gui
 
 ### Important: Code is in heavy development and probably not secure. Currently is usage under own risk!
 
-![login](/assets/img/examples/login.png?raw=true "login")
-![file list](/assets/img/examples/filelist.png?raw=true "file list")
+![login](assets/img/examples/login.png?raw=true "login")
+![file list](assets/img/examples/filelist.png?raw=true "file list")
 
 # Setup
 
