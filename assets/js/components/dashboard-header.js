@@ -1,4 +1,5 @@
 import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.esm.browser.js';
+import {  notification } from "./notification.js";
 
 export const DashboardHeader = Vue.component('dashboard-header', {
     methods: {
@@ -6,16 +7,16 @@ export const DashboardHeader = Vue.component('dashboard-header', {
             axios.post('/logout').then(_ => {
                 window.location = '/';
             }).catch(_ => {
-                this.$root.$emit('notification', { message: 'Error during Logout.', background: 'danger' });
+                this.$root.$emit('notification', notification('Error during Logout.', 'danger'));
             });
         },
         onRestart: function () {
             axios.post('/restart')
                 .then(_ => {
-                    this.$root.$emit('notification', { message: 'Restart Successful.', background: 'success' });
+                    this.$root.$emit('notification', notification('Restart Successful.', 'success'));
                 })
                 .catch(_ => {
-                    this.$root.$emit('notification', { message: 'Error during Restart.', background: 'danger' });
+                    this.$root.$emit('notification', notification('Error during Restart.', 'danger'));
                 });
         }
     },
