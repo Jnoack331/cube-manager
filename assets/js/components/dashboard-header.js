@@ -3,12 +3,20 @@ import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.esm.browser.js
 export const DashboardHeader = Vue.component('dashboard-header', {
     methods: {
         onLogout: function () {
-            axios.post('/logout').then(response => {
-                window.location = '/login';
-            }).catch(_ => {});
+            axios.post('/logout').then(_ => {
+                window.location = '/';
+            }).catch(_ => {
+                this.$root.$emit('notification', { message: 'Error during Logout.', background: 'danger' });
+            });
         },
         onRestart: function () {
-            axios.post('/restart').catch(_ => {});
+            axios.post('/restart')
+                .then(_ => {
+                    this.$root.$emit('notification', { message: 'Restart Successful.', background: 'success' });
+                })
+                .catch(_ => {
+                    this.$root.$emit('notification', { message: 'Error during Restart.', background: 'danger' });
+                });
         }
     },
     template: `
