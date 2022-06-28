@@ -31,7 +31,6 @@ export const Dashboard = Vue.component('dashboard', {
           event.preventDefault();
           this.$root.$emit("upload", true);
 
-          console.log(event.dataTransfer.files[0]);
           let formData = new FormData();
           formData.append("file", event.dataTransfer.files[0]);
           axios.post('/upload', formData, {
@@ -61,13 +60,13 @@ export const Dashboard = Vue.component('dashboard', {
     },
     mounted: function () {
         this.changeDirectory(this.currentPath);
-        document.addEventListener('drag', this.onDrag)
-        document.addEventListener('dragstart', this.onDrag)
-        document.addEventListener('dragend',this.onDrag)
-        document.addEventListener('dragover', this.onDrag)
-        document.addEventListener('dragenter', this.onDrag)
-        document.addEventListener('dragleave', this.onDrag)
-        document.addEventListener('drop', this.onDrop);
+        document.body.addEventListener('drag', this.onDrag)
+        document.body.addEventListener('dragstart', this.onDrag)
+        document.body.addEventListener('dragend',this.onDrag)
+        document.body.addEventListener('dragover', this.onDrag)
+        document.body.addEventListener('dragenter', this.onDrag)
+        document.body.addEventListener('dragleave', this.onDrag)
+        document.body.addEventListener('drop', this.onDrop);
     },
     template: `
         <div class="container-md">
