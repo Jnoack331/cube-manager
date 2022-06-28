@@ -19,7 +19,6 @@ export const UploadStatus = Vue.component('upload-status', {
     },
     mounted: function () {
         this.$root.$on('upload', upload => {
-            console.log('upload', upload);
             if (upload) {
                 this.error = false;
                 this.show = true;

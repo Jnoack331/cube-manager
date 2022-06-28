@@ -14,7 +14,6 @@ export const FileEntry = Vue.component('file-entry', {
     methods: {
       onClick: function () {
           if (this.file.IsDir) {
-              console.log('emit');
               this.$emit('change-directory', this.file.Path);
           }
       },
