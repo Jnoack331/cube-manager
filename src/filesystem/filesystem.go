@@ -3,6 +3,7 @@ package filesystem
 import (
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -19,6 +20,10 @@ type File struct {
 }
 
 func (e Filesystem) GetFileList(root string) []File {
+	if e.isInRootPath(root) == false {
+		return []File{}
+	}
+
 	fileList := []File{}
 	first := true
 	maxDepth := strings.Count(root, "/") + 1
@@ -48,11 +53,19 @@ func (e Filesystem) GetFileList(root string) []File {
 }
 
 func (e Filesystem) Delete(path string) {
-	currentWorkingDirectory, _ := os.Getwd()
-	minDepth := strings.Count(currentWorkingDirectory, "/")
-	pathDepth := strings.Count(path, "/")
-
-	if pathDepth > minDepth {
+	if e.isInRootPath(path) {
 		os.RemoveAll(path)
 	}
+}
+
+func (e Filesystem) isInRootPath(filePath string) bool {
+	currentWorkingDirectory, _ := os.Getwd()
+	filePath = path.Clean(filePath)
+	minDepth := strings.Count(currentWorkingDirectory, "/")
+	pathDepth := strings.Count(filePath, "/")
+	if pathDepth < minDepth {
+		return false
+	}
+
+	return strings.HasPrefix(filePath, filePath)
 }
