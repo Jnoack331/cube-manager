@@ -1,7 +1,6 @@
 package filesystem
 
 import (
-	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -13,9 +12,10 @@ type Filesystem struct {
 }
 
 type File struct {
-	IsDir bool
-	Name  string
-	Path  string
+	IsDir    bool
+	Name     string
+	Path     string
+	Selected bool
 }
 
 func (e Filesystem) GetFileList(root string) []File {
@@ -28,7 +28,6 @@ func (e Filesystem) GetFileList(root string) []File {
 			return err
 		}
 		if strings.Count(path, string(os.PathSeparator)) > maxDepth {
-			fmt.Println("skip", path)
 			return fs.SkipDir
 		}
 
@@ -37,7 +36,7 @@ func (e Filesystem) GetFileList(root string) []File {
 			return nil
 		}
 
-		fileList = append(fileList, File{d.IsDir(), d.Name(), path})
+		fileList = append(fileList, File{d.IsDir(), d.Name(), path, false})
 		return nil
 	})
 
