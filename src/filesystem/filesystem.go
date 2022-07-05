@@ -20,7 +20,7 @@ type File struct {
 }
 
 func (e Filesystem) GetFileList(root string) []File {
-	if e.isInRootPath(root) == false {
+	if e.IsInRootPath(root) == false {
 		return []File{}
 	}
 
@@ -53,12 +53,12 @@ func (e Filesystem) GetFileList(root string) []File {
 }
 
 func (e Filesystem) Delete(path string) {
-	if e.isInRootPath(path) {
+	if e.IsInRootPath(path) {
 		os.RemoveAll(path)
 	}
 }
 
-func (e Filesystem) isInRootPath(filePath string) bool {
+func (e Filesystem) IsInRootPath(filePath string) bool {
 	currentWorkingDirectory, _ := os.Getwd()
 	filePath = path.Clean(filePath)
 	minDepth := strings.Count(currentWorkingDirectory, "/")

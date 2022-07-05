@@ -28,11 +28,10 @@ func Filelist(c *gin.Context) {
 
 	myfilesystem := filesystem.Filesystem{}
 	currentDirectory, _ := os.Getwd()
-	value := c.Query("path")
-	currentDirectoryLength := len(strings.Split(currentDirectory, "/"))
-	pathDirectoryLength := len(strings.Split(value, "/"))
-	if len(value) > 0 && currentDirectoryLength < pathDirectoryLength {
-		currentDirectory = value
+	requestedPath := c.Query("path")
+
+	if myfilesystem.IsInRootPath(requestedPath) {
+		currentDirectory = requestedPath
 	}
 
 	c.JSON(http.StatusOK, gin.H{
