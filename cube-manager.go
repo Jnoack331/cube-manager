@@ -2,6 +2,7 @@ package main
 
 import (
 	"cube-manager/src/controllers"
+	"cube-manager/src/minecraft-manager"
 	"embed"
 	_ "embed"
 	"github.com/gin-contrib/sessions"
@@ -11,6 +12,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 )
 
 //go:embed templates/* assets/js/* assets/img/*
@@ -20,6 +22,11 @@ func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
+	}
+
+	minecraftServer := minecraft_manager.NewMinecraftManager("server.jar")
+	if os.Getenv("CUBE_AUTORUN_SERVER") == "true" {
+		minecraftServer.Start()
 	}
 
 	r := gin.Default()
@@ -41,6 +48,17 @@ func main() {
 	r.POST("/logout", controllers.Logout)
 	r.POST("/restart", controllers.Restart)
 	r.GET("/authenticated", controllers.Authenticated)
+
+	r.GET("/test", func(c *gin.Context) {
+		c.JSON(http.StatusFound, gin.H{
+			"output": minecraftServer.GetOutput(),
+		})
+	})
+	r.GET("/test2", func(c *gin.Context) {
+		c.JSON(http.StatusFound, gin.H{
+			"output": minecraftServer.GetError(),
+		})
+	})
 
 	r.GET("/login", func(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/")

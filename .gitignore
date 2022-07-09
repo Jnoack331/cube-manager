@@ -1,2 +1,6 @@
 .env
 /.idea/
+/test-server/*
+!/test-server/server.jar
+!/test-server/eula.txt
+!/test-server/server.properties
