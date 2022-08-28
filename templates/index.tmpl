@@ -47,9 +47,10 @@
     <div id="app">
         <login v-if="authenticated === false" class="form-signin w-100 m-auto"></login>
         <dashboard-header v-if="authenticated"></dashboard-header>
-        <dashboard v-if="authenticated"></dashboard>
+        <dashboard v-if="authenticated && navigation === 'dashboard'"></dashboard>
+        <server-output v-if="authenticated  && navigation === 'server-output'"></server-output>
         <notification></notification>
-        <upload-status v-if="authenticated"></notification>
+        <upload-status v-if="authenticated"></upload-status>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

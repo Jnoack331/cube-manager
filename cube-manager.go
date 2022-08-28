@@ -49,20 +49,20 @@ func main() {
 	r.POST("/restart", controllers.Restart)
 	r.GET("/authenticated", controllers.Authenticated)
 
-	r.GET("/test", func(c *gin.Context) {
-		c.JSON(http.StatusFound, gin.H{
-			"output": minecraftServer.GetOutput(),
-		})
+	r.GET("/server/output", func(context *gin.Context) {
+		controllers.ServerOutput(context, minecraftServer)
 	})
-	r.GET("/test2", func(c *gin.Context) {
-		c.JSON(http.StatusFound, gin.H{
-			"output": minecraftServer.GetError(),
-		})
+	r.POST("/server/command", func(context *gin.Context) {
+		controllers.ServerCommand(context, minecraftServer)
+	})
+	r.GET("/server/status", func(c *gin.Context) {
+		controllers.ServerStatus(c, minecraftServer)
 	})
 
 	r.GET("/login", func(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/")
 	})
 	r.POST("/login", controllers.Login)
+
 	r.Run()
 }

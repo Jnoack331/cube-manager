@@ -18,6 +18,9 @@ export const DashboardHeader = Vue.component('dashboard-header', {
                 .catch(_ => {
                     this.$root.$emit('notification', notification('Error during Restart.', 'danger'));
                 });
+        },
+        changeNavigation: function (navigation) {
+            this.$root.navigation = navigation;
         }
     },
     template: `
@@ -31,6 +34,12 @@ export const DashboardHeader = Vue.component('dashboard-header', {
               </button>
               <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                   <li class="nav-item">
+                      <a class="nav-link active" aria-current="page" href="#" v-on:click="changeNavigation('dashboard')">Files</a>
+                   </li>
+                   <li class="nav-item">
+                      <a class="nav-link" aria-current="page" href="#" v-on:click="changeNavigation('server-output')">Chat & Commands</a>
+                   </li>
                   <li class="nav-item">
                       <button class="btn btn-outline-primary mx-auto" v-on:click="onRestart()">
                         <i class="bi bi-arrow-clockwise"></i>
