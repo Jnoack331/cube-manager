@@ -48,7 +48,7 @@ export const ServerOutput = Vue.component('server-output', {
         <div class="container-md">
         <!-- @todo fix this garbage ass style usages -->
           <ul class="list-group" id="server-output" style="border-bottom-left-radius: unset;border-bottom-right-radius: unset;margin-top: 1rem;height: 80%;display: block;overflow-y: scroll; overflow-x: hidden; word-break: break-all;">
-            <li class="list-group-item" style="text-align: left; padding: 0.3rem 1rem;" v-for="line in serverOutput">
+            <li class="list-group-item" style="text-align: left; padding: 0.3rem 1rem; user-select: text" v-for="line in serverOutput">
                 {{ line }}
             </li>
           </ul>
