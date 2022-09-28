@@ -24,6 +24,7 @@ func Filelist(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"filelist": []string{},
 		})
+		return
 	}
 
 	myfilesystem := filesystem.Filesystem{}
@@ -44,6 +45,7 @@ func Upload(c *gin.Context) {
 	session := sessions.Default(c)
 	if session.Get("authenticated") != true {
 		c.Redirect(302, "/login")
+		return
 	}
 
 	file, header, err := c.Request.FormFile("file")
@@ -86,6 +88,7 @@ func Delete(c *gin.Context) {
 	session := sessions.Default(c)
 	if session.Get("authenticated") != true {
 		c.Redirect(302, "/login")
+		return
 	}
 
 	var form DeleteForm
@@ -103,6 +106,7 @@ func Download(c *gin.Context) {
 	session := sessions.Default(c)
 	if session.Get("authenticated") != true {
 		c.Redirect(302, "/login")
+		return
 	}
 
 	path := c.Query("path")
@@ -118,6 +122,7 @@ func Restart(c *gin.Context) {
 	session := sessions.Default(c)
 	if session.Get("authenticated") != true {
 		c.Redirect(302, "/login")
+		return
 	}
 
 	cmd := exec.Command("sudo", "systemctl", "restart", "minecraft")
