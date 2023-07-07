@@ -25,7 +25,7 @@ func (server *MinecraftManager) IsServerRunning() bool {
 }
 
 func (server *MinecraftManager) Start() {
-	cmd := exec.Command("java", "-Xmx2048M", "-Xms1024M", "-jar", server.serverJar)
+	cmd := exec.Command("java", "-Xmx2048M", "-Xms1024M", "-jar", server.serverJar, "--nogui")
 	outputBuffer := &bytes.Buffer{}
 
 	stdinRead, stdinWrite := io.Pipe()

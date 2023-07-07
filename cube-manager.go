@@ -1,22 +1,43 @@
 package main
 
 import (
+	Frontend "cube-manager/frontend"
 	"cube-manager/src/controllers"
 	"cube-manager/src/minecraft-manager"
-	"embed"
 	_ "embed"
+	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
 	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
 )
 
-//go:embed templates/* assets/js/* assets/img/*
-var embedFS embed.FS
+var wsupgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+func wshandler(w http.ResponseWriter, r *http.Request) {
+	conn, err := wsupgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println("Failed to set websocket upgrade: %+v", err)
+		return
+	}
+
+	for {
+		t, msg, err := conn.ReadMessage()
+		if err != nil {
+			break
+		}
+		conn.WriteMessage(t, msg)
+	}
+}
 
 func main() {
 	err := godotenv.Load()
@@ -30,9 +51,10 @@ func main() {
 	}
 
 	r := gin.Default()
-	templ := template.Must(template.New("").ParseFS(embedFS, "templates/*.tmpl"))
+	templ := template.Must(template.New("").ParseFS(Frontend.EmbedFS, "dist/index.html"))
 	r.SetHTMLTemplate(templ)
-	r.StaticFS("/public", http.FS(embedFS))
+	assets, _ := fs.Sub(Frontend.EmbedFS, "dist/assets")
+	r.StaticFS("/assets", http.FS(assets))
 	store := cookie.NewStore([]byte("secret"))
 	store.Options(sessions.Options{
 		MaxAge: 0,
@@ -40,7 +62,24 @@ func main() {
 	})
 	r.Use(sessions.Sessions("sessions", store))
 
-	r.GET("/", controllers.Dashboard)
+	r.Use(func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", c.Request.Header.Get("Origin"))
+		c.Header("Access-Control-Allow-Headers", "content-type")
+		c.Header("Access-Control-Allow-Credentials", "true")
+	})
+
+	r.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{})
+	})
+
+	r.GET("/ws", func(c *gin.Context) {
+		session := sessions.Default(c)
+		if session.Get("authenticated") != true {
+			c.Redirect(302, "/login")
+		}
+		wshandler(c.Writer, c.Request)
+	})
+
 	r.GET("/filelist", controllers.Filelist)
 	r.POST("/upload", controllers.Upload)
 	r.POST("/delete", controllers.Delete)
@@ -63,6 +102,14 @@ func main() {
 		c.Redirect(http.StatusFound, "/")
 	})
 	r.POST("/login", controllers.Login)
+
+	r.NoRoute(func(c *gin.Context) {
+		if c.Request.Method == http.MethodOptions {
+			c.Data(200, gin.MIMEPlain, nil)
+			return
+		}
+		c.Data(404, gin.MIMEPlain, nil)
+	})
 
 	r.Run()
 }
