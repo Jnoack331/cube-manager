@@ -16,6 +16,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 var wsupgrader = websocket.Upgrader{
@@ -23,19 +24,18 @@ var wsupgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func wshandler(w http.ResponseWriter, r *http.Request) {
+func wshandler(w http.ResponseWriter, r *http.Request, minecraftServer *minecraft_manager.MinecraftManager) {
+	wsupgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := wsupgrader.Upgrade(w, r, nil)
 	if err != nil {
 		fmt.Println("Failed to set websocket upgrade: %+v", err)
 		return
 	}
 
-	for {
-		t, msg, err := conn.ReadMessage()
-		if err != nil {
-			break
-		}
-		conn.WriteMessage(t, msg)
+	for true {
+		output := minecraftServer.GetOutput()
+		conn.WriteMessage(1, []byte(output))
+		time.Sleep(200 * time.Millisecond)
 	}
 }
 
@@ -72,12 +72,12 @@ func main() {
 		c.HTML(http.StatusOK, "index.html", gin.H{})
 	})
 
-	r.GET("/ws", func(c *gin.Context) {
+	r.GET("/ws/logs", func(c *gin.Context) {
 		session := sessions.Default(c)
 		if session.Get("authenticated") != true {
 			c.Redirect(302, "/login")
 		}
-		wshandler(c.Writer, c.Request)
+		wshandler(c.Writer, c.Request, minecraftServer)
 	})
 
 	r.GET("/filelist", controllers.Filelist)
@@ -85,7 +85,9 @@ func main() {
 	r.POST("/delete", controllers.Delete)
 	r.GET("/download", controllers.Download)
 	r.POST("/logout", controllers.Logout)
-	r.POST("/restart", controllers.Restart)
+	r.POST("/restart", func(c *gin.Context) {
+		controllers.Restart(c, minecraftServer)
+	})
 	r.GET("/authenticated", controllers.Authenticated)
 
 	r.GET("/server/output", func(context *gin.Context) {
