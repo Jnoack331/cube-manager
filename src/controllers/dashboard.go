@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"cube-manager/src/filesystem"
+	minecraft_manager "cube-manager/src/minecraft-manager"
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -10,8 +11,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"strings"
+	"time"
 )
 
 func Dashboard(c *gin.Context) {
@@ -118,14 +119,20 @@ func Download(c *gin.Context) {
 	c.File(path)
 }
 
-func Restart(c *gin.Context) {
+func Restart(c *gin.Context, server *minecraft_manager.MinecraftManager) {
 	session := sessions.Default(c)
 	if session.Get("authenticated") != true {
 		c.Redirect(302, "/login")
 		return
 	}
 
-	cmd := exec.Command("sudo", "systemctl", "restart", "minecraft")
-	cmd.Run()
+	if server.IsServerRunning() {
+		server.Stop()
+		for server.IsServerRunning() {
+			time.Sleep(500 * time.Millisecond)
+		}
+	}
+
+	server.Start()
 	c.JSON(http.StatusOK, gin.H{})
 }

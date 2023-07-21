@@ -3,6 +3,7 @@ package minecraft_manager
 import (
 	"bytes"
 	"io"
+	"os"
 	"os/exec"
 	"time"
 )
@@ -12,7 +13,7 @@ type MinecraftManager struct {
 	serverJar string
 	process   *exec.Cmd
 	stdout    string
-	stdin     *io.PipeWriter
+	stdin     *os.File
 }
 
 func NewMinecraftManager(serverJar string) *MinecraftManager {
@@ -28,14 +29,18 @@ func (server *MinecraftManager) Start() {
 	cmd := exec.Command("java", "-Xmx2048M", "-Xms1024M", "-jar", server.serverJar, "--nogui")
 	outputBuffer := &bytes.Buffer{}
 
-	stdinRead, stdinWrite := io.Pipe()
+	stdinRead, stdinWrite, err := os.Pipe()
 	server.stdin = stdinWrite
 	cmd.Stdin = stdinRead
 	cmd.Stdout = outputBuffer
 	cmd.Stderr = cmd.Stdout
+	err = cmd.Start()
+	if err != nil {
+		panic(err)
+	}
 
 	go func() {
-		cmd.Run()
+		cmd.Wait()
 		server.running = false
 	}()
 
@@ -43,7 +48,7 @@ func (server *MinecraftManager) Start() {
 		for true {
 			readBytes, _ := io.ReadAll(outputBuffer)
 			server.stdout = server.stdout + string(readBytes)
-			time.Sleep(time.Second)
+			time.Sleep(100 * time.Millisecond)
 		}
 	}()
 
