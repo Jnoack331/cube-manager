@@ -6,17 +6,7 @@ module.exports = {
   'extends': [
     'plugin:vue/vue3-essential',
     'eslint:recommended',
-    '@vue/eslint-config-prettier'
-  ],
-  overrides: [
-    {
-      files: [
-        'cypress/e2e/**.{cy,spec}.{js,ts,jsx,tsx}'
-      ],
-      'extends': [
-        'plugin:cypress/recommended'
-      ]
-    }
+    '@vue/eslint-config-typescript'
   ],
   parserOptions: {
     ecmaVersion: 'latest'
